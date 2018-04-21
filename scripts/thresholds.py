@@ -1,8 +1,11 @@
 from numpy import pi as PI
 
+# Image resolution when converted from a video.
+IMAGE_WIDTH = 960
+IMAGE_HEIGHT = 540
+
 # Color ranges in HSV space for yellow and white colors.
-yellow_white_color_range = ([0, 0, 210], [255, 255, 255])
-yellow_color_range = ([80,50,50],[100,255,255])
+YELLOW_WHITE_COLOR_RANGE = ([0, 0, 210], [255, 255, 255])
 
 # Gaussian blur.
 GAUSSIAN_BLUR_KERNEL_SIZE = 3

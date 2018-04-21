@@ -3,6 +3,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import thresholds as th
+from lane import *
 
 def grayscale(img):
   """Applies the Grayscale transform
@@ -15,7 +16,7 @@ def color_filter(img):
   """Filters the image for a given color space.
   Here we look for yellow and white colors which represent the lane lines.
   """
-  lower, upper = th.yellow_white_color_range
+  lower, upper = th.YELLOW_WHITE_COLOR_RANGE
   lower = np.array(lower, dtype=np.uint8)
   upper = np.array(upper, dtype=np.uint8)
 
@@ -78,11 +79,74 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
   If you want to make the lines semi-transparent, think about combining
   this function with the weighted_img() function below
   """
-  find_lane_lines(lines)
-
   for line in lines:
     for x1, y1, x2, y2 in line:
       cv2.line(img, (x1, y1), (x2, y2), color, thickness)
+
+
+def draw_lane_lines(img, left_line_pts, right_line_pts, color=[255,0,0], thickness=5):
+  """
+  Draws left and right lane lines on an image.
+  :param img: Source image on which the lane-lines have to be drawn.
+  :param left_line_pts: Points belonging to the left line of the lane.
+  :param right_line_pts: Points belonging to the right line of the lane.
+  :param color: RGB color of the line to be drawn.
+  :param thickness: Thickness of the line to be drawn.
+  """
+  # Draw left line of the lane.
+  cv2.line(img, left_line_pts[0], left_line_pts[-1], color, thickness)
+  # Draw right line of the lane.
+  cv2.line(img, right_line_pts[0], right_line_pts[-1], color, thickness)
+
+def draw_lane(img, line_segments):
+  """
+  :param line_segments:  Line segments obtained using Hough transform.
+  :return:  Image containing marked lanes.
+  """
+  # Line fit on obtained hough-lines.
+  if line_segments is not None:
+    left_line_segments = [segment for segment in line_segments if segment.lane_side == Lane.LEFT_LINE]
+    right_line_segments = [segment for segment in line_segments if segment.lane_side == Lane.RIGHT_LINE]
+    left_line_x, left_line_y = get_x_y_coordinates_as_list(left_line_segments)
+    right_line_x, right_line_y = get_x_y_coordinates_as_list(right_line_segments)
+
+    if len(left_line_x) == 0 or len(left_line_y) == 0 or len(right_line_x) == 0 or len(right_line_y) == 0:
+      return None
+
+    left_coeffs = np.polyfit(left_line_x, left_line_y, 1)
+    right_coeffs = np.polyfit(right_line_x, right_line_y, 1)
+
+    left_line = np.poly1d(left_coeffs)
+    right_line = np.poly1d(right_coeffs)
+
+    # Generate left-line and right-line's points.
+    # Note: Minimum x-coordinate that can be observed is 0.
+    x_left = np.linspace(0, max(left_line_x), 10).astype(int)
+    y_left = left_line(x_left).astype(int)
+    left_line_pts = list(zip(x_left, y_left))
+    # Note: Maximum x-coordinate that can be observed is image's width.
+    x_right = np.linspace(min(right_line_x), img.shape[1], 10).astype(int)
+    y_right = right_line(x_right).astype(int)
+    right_line_pts = list(zip(x_right, y_right))
+
+    lines_img = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
+    draw_lane_lines(lines_img, left_line_pts, right_line_pts)
+    return lines_img
+
+
+def get_x_y_coordinates_as_list(line_segments):
+  """
+  Returns x-coordinates and y-coordinates as separate lists.
+  :param line_segments: Line segments containing x and y coordinates.
+  """
+  line_x_coords = []
+  line_y_coords = []
+
+  for line_seg in line_segments:
+    line_x_coords += line_seg.get_endpoint_x_coordinates()
+    line_y_coords += line_seg.get_endpoint_y_coordinates()
+
+  return line_x_coords,line_y_coords
 
 
 def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
@@ -92,18 +156,11 @@ def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
   Returns an image with hough lines drawn.
   """
   lines = cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)
-  line_img = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
-  draw_lines(line_img, lines)
-  return line_img
-
-
-def find_lane_lines(lines):
-  """
-  Finds left and right lane-lines.
-  :param lines: A set of line-segments which may or may not belong to the current lane.
-  :return: Left and right lane-lines.
-  """
-  return lines
+  filtered_lines = list(filter(lambda l: l.is_candidate, map(lambda line: Line(*line[0]), lines)))
+  if filtered_lines is not None:
+    return filtered_lines
+  else:
+    return None
 
 
 # Python 3 has support for cool math symbols.
