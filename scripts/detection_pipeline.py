@@ -19,8 +19,8 @@ def detect_lanes_pipeline(actual_image):
   # Get grayscale image.
   gray = du.grayscale(actual_image)
 
-  # Plotting the histogram gives us an idea about the gradient intensities which then helps to setting the lower/upper
-  # thresholds during Canny filter step.
+  # Plotting the histogram gives us an idea about the gradient intensities which helps us to set the lower/upper
+  # thresholds of the Canny filter.
   # hist_image = plt.hist(gray.ravel(),256,[0,256])
 
   # Remove noise using Gaussian blur.
