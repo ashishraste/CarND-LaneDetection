@@ -84,22 +84,25 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2):
       cv2.line(img, (x1, y1), (x2, y2), color, thickness)
 
 
-def draw_lane_lines(img, left_line_pts, right_line_pts, color=[255,0,0], thickness=5):
+def draw_lane_lines(img, left_line_endpoints, right_line_endpoints, color=[255,0,0], thickness=8):
   """
   Draws left and right lane lines on an image.
   :param img: Source image on which the lane-lines have to be drawn.
-  :param left_line_pts: Points belonging to the left line of the lane.
-  :param right_line_pts: Points belonging to the right line of the lane.
+  :param left_line_endpoints: Endpoints of the line-segment belonging to the left line of the lane.
+  :param right_line_endpoints: Endpoints os the line-segment belonging to the right line of the lane.
   :param color: RGB color of the line to be drawn.
   :param thickness: Thickness of the line to be drawn.
   """
   # Draw left line of the lane.
-  cv2.line(img, left_line_pts[0], left_line_pts[-1], color, thickness)
+  cv2.line(img, left_line_endpoints[0], left_line_endpoints[-1], color, thickness)
   # Draw right line of the lane.
-  cv2.line(img, right_line_pts[0], right_line_pts[-1], color, thickness)
+  cv2.line(img, right_line_endpoints[0], right_line_endpoints[-1], color, thickness)
 
 def draw_lane(img, line_segments):
   """
+  Segregates line-segments based on their slope to identify which part (left or right) of the lane they belong to.
+  Runs a linear-regression on the identified left and right line-segments, and extrapolates those lines until the bottom
+  part of the image i.e. x = 0 for left lane-line and y = height-of-image for right lane-line.
   :param line_segments:  Line segments obtained using Hough transform.
   :return:  Image containing marked lanes.
   """
@@ -152,8 +155,7 @@ def get_x_y_coordinates_as_list(line_segments):
 def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
   """
   `img` should be the output of a Canny transform.
-
-  Returns an image with hough lines drawn.
+  Note: This function has been modified to return just the raw line-segments identified while applying Hough transform.
   """
   lines = cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)
   filtered_lines = list(filter(lambda l: l.is_candidate, map(lambda line: Line(*line[0]), lines)))
