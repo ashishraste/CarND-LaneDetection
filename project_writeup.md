@@ -7,10 +7,6 @@
 The goals of the project are the following.
 * Build an image-processing pipeline that finds lane lines on the road.
 
-[//]: # (Image References)
-
-[histogramOfIntensities]: ./test_images_output/histogramOfIntensities.png "Histogram"
-
 ---
 
 ### Reflection
@@ -24,7 +20,7 @@ The image processing pipeline to find lane lines on the road in a given image co
   the lower and upper bounds of intensities (for finding edges using Canny filter).
   Plot of one such histogram is shown below.
 
-  ![alt text][histogramOfIntensities]
+  ![alt text](./test_images_output/sampleHistogramIntensities.png "Histogram of grayscale intensities")
 
   2. Grayscale image is filtered using Gaussian blur (kernel-size = 3) to
   de-noise the image.
