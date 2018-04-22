@@ -51,6 +51,11 @@ def detect_lanes_pipeline(actual_image):
 
 
 def process_image(image):
+  """
+  Converts a video-frame to an image.
+  :param image: Video frame.
+  :return: Image with certain width and height parameters.
+  """
   image_frame = cv2.resize(image, (th.IMAGE_WIDTH, th.IMAGE_HEIGHT))
   return detect_lanes_pipeline(image_frame)
 
@@ -60,36 +65,3 @@ if __name__ == '__main__':
   clip1 = VideoFileClip('../test_videos/challenge.mp4')
   white_clip = clip1.fl_image(process_image)
   white_clip.write_videofile(white_output, audio=False)
-
-# if __name__=='__main__':
-#   # Parse input and output directory paths.
-#   # parser = argparse.ArgumentParser()
-#   # parser.add_argument("input_dir", help="Input directory containing images.")
-#   # parser.add_argument("output_dir", help="Output directory where lane-images have to be saved.")
-#   # args = parser.parse_args()
-#   #
-#   # input_dir = args.input_dir
-#   # output_dir = args.output_dir
-#
-#   input_dir = '../test_images'
-#   output_dir = '../test_images_output'
-#
-#   image_files = os.listdir(input_dir)
-#
-#   for file in image_files:
-#     # Load image.
-#     print(file)
-#     if file.endswith('.jpg'):
-#       image = mimg.imread(input_dir+'/'+file)
-#
-#       # Run lane-detection-pipeline on the image.
-#       lanes_image = detect_lanes_pipeline(image)
-#       plt.imshow(lanes_image)
-#       plt.show()
-#       du.write_img(lanes_image, output_dir+'/output_'+file)
-
-# if __name__=='__main__':
-#   test_image = mimg.imread('../test_images/solidYellowCurve.jpg')
-#   lanes_image = detect_lanes_pipeline(test_image)
-#   plt.imshow(lanes_image)
-#   plt.show()
