@@ -22,12 +22,24 @@ having run on the test-images.
 
 5. test_videos : Sample videos to test the detection pipeline.
 
-6. solidWhiteRightOutput.mp4 : Annotated video output of the input video test_videos/solidWhiteRight.mp4
-given by the detection pipeline.
+6. test_videos_output : Contains annotated video outputs, having detected lane,
+of input videos residing in the test_videos/ directory.
 
-7. solidYellowLeftOutput.mp4 : Annotated video output of the input video test_videos/solidYellowLeft.mp4
-given by the detection pipeline.
+7. scripts : Sources containing the detection pipeline and some of their unit-tests.
 
-8. scripts : Sources containing the detection pipeline and some of their unit-tests.
+8. run_lane_detection.sh : Shell script to run the detection pipeline on the two
+videos inside test_videos/ directory.
+
+---
+
+#### Running the lane-detection pipeline
+
+Note: Below instructions are only supported for Unix shells.
+
+From the parent directory run the following.
+
+`sh run_lane_detection.sh`
+
+Output videos are saved inside test_videos_output/ directory.
 
 ---
