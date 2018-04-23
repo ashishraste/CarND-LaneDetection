@@ -71,16 +71,16 @@ if __name__ == '__main__':
       lanes_image = detect_lanes_pipeline(image)
       plt.figure(figsize=(12, 8))
       plt.imshow(lanes_image)
-      plt.show()
+      # plt.show()
       du.write_img(lanes_image, output_dir + '/output_' + file)
 
   ### Run lane-detection-pipeline on sample videos.
-  white_output = 'solidWhiteRightOutput.mp4'
+  white_output = '../test_videos_output/solidWhiteRightOutput.mp4'
   clip1 = VideoFileClip('../test_videos/solidWhiteRight.mp4')
   white_clip = clip1.fl_image(process_image)
   white_clip.write_videofile(white_output, audio=False)
 
-  yellow_output = 'solidYellowLeftOutput.mp4'
+  yellow_output = '../test_videos_output/solidYellowLeftOutput.mp4'
   clip2 = VideoFileClip('../test_videos/solidYellowLeft.mp4')
   yellow_clip = clip2.fl_image(process_image)
   yellow_clip.write_videofile(yellow_output, audio=False)
